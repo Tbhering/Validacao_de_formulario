@@ -43,7 +43,7 @@ const mensagensDeErro = {
 
 const validadores = {
     dataNascimento: input => validaDataNascimento(input),
-    cpf:input => validaCPF(input)
+    cpf: input => validaCPF(input)
 };
 function mostraMensagemDeErro(tipoDeInput, input) {
     let mensagem = ''
@@ -78,11 +78,11 @@ function validaCPF(input) {
     const cpfFormatado = input.value.replace(/\D/g, '')
     let mensagem = ''
 
-    if (!checaCPFRepetido(cpfFormatado )){
-        mensagem ='CPF digitado nãoi é válido!'
+    if (!checaCPFRepetido(cpfFormatado) || !checaestruturaCPF(cpfFormatado)) {
+        mensagem = 'CPF digitado nãoi é válido!'
     }
 
-        input.setCustomValidity(mensagem)
+    input.setCustomValidity(mensagem)
 
 }
 
@@ -108,4 +108,36 @@ function checaCPFRepetido(cpf) {
     })
 
     return cpfValido
+}
+
+
+function checaestruturaCPF(cpf) {
+    const multiplicador = 10;
+
+    return checaDigitoVerificador(cpf, multiplicador)
+}
+function checaDigitoVerificador(cpf, multiplicador) {
+    if (multiplicador >= 12) {
+        return true
+    }
+
+    let multiplicadorInicial = multiplicador;
+    let soma = 0;
+
+    const cpfSemDigitos = cpf.substr(0, multiplicador - 1).split('');
+    const checaDigitoVerificador = cpf.charART(multiplicador - 1)
+
+    for (let contador = 0; multiplicadorInicial > 1; multiplicadorInicial--) {
+        soma = soma + cpfSemDigitos[contador] * multiplicadorInicial;
+        contador++
+    }
+    if (checaDigitoVerificador == confirmaDigito(soma)) {
+        return checaDigitoVerificador(cpf, multiplicador + 1)
+    }
+    return false
+
+}
+
+function confirmaDigito(soma) {
+    return 11 - (soma % 11)
 }
