@@ -1,5 +1,6 @@
 export function valida(input) {
-    const tipoDeInput = input.dataset.tipo
+    const tipoDeInput = input.tipo
+    console.log(input.dataset.tipo)
 
     if (validadores[tipoDeInput]) {
         validadores[tipoDeInput](input)
@@ -64,11 +65,13 @@ const validadores = {
     cpf: input => validaCPF(input),
     cep: input => recuperarCEP(input),
 };
+
 function mostraMensagemDeErro(tipoDeInput, input) {
     let mensagem = ''
     tiposDeErro.forEach(erro => {
         if (input.validity[erro]) {
             mensagem = mensagensDeErro[tipoDeInput][erro]
+            console.log(tipoDeInput)
         }
     })
     return mensagem
@@ -98,7 +101,7 @@ function validaCPF(input) {
     let mensagem = ''
 
     if (!checaCPFRepetido(cpfFormatado) || !checaestruturaCPF(cpfFormatado)) {
-        mensagem = 'CPF digitado nãoi é válido!'
+        mensagem = 'CPF invalido'
     }
 
     input.setCustomValidity(mensagem)
@@ -135,6 +138,7 @@ function checaestruturaCPF(cpf) {
 
     return checaDigitoVerificador(cpf, multiplicador)
 }
+
 function checaDigitoVerificador(cpf, multiplicador) {
     if (multiplicador >= 12) {
         return true
@@ -144,13 +148,13 @@ function checaDigitoVerificador(cpf, multiplicador) {
     let soma = 0;
 
     const cpfSemDigitos = cpf.substr(0, multiplicador - 1).split('');
-    const checaDigitoVerificador = cpf.charART(multiplicador - 1)
+    const digitoVerificador = cpf.charAt(multiplicador -1);
 
     for (let contador = 0; multiplicadorInicial > 1; multiplicadorInicial--) {
-        soma = soma + cpfSemDigitos[contador] * multiplicadorInicial;
+        soma = soma + cpfSemDigitos[contador] * multiplicadorInicial
         contador++
     }
-    if (checaDigitoVerificador == confirmaDigito(soma)) {
+    if (digitoVerificador == confirmaDigito(soma)) {
         return checaDigitoVerificador(cpf, multiplicador + 1)
     }
     return false
@@ -176,7 +180,7 @@ function recuperarCEP(input) {
             response => response.json()
         ).then(
             data => {
-                console.log(data)
+               console.log(data)
             }
         )
 
