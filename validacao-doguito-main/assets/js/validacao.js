@@ -25,25 +25,44 @@ const tiposDeErro = [
 const mensagensDeErro = {
     nome: {
         valueMissing: 'o campo nome não pode estar vazio'
-    }, email: {
+    },
+    email: {
         valueMissing: 'o campo de email não pode estar vazio.',
         typeMismatch: 'O email digitado não é válido.'
-    }, senha: {
+    },
+    senha: {
+
         valueMissing: 'O campo de senhão não pode estar vazio.',
         patternMismatch: 'A senha deve contar entre 4 a 8 caracteres, deve conter pelo menos uma letra maiúscula, um número e não deve conter símbolos'
-    }, dataNascimento: {
+    },
+    dataNascimento: {
+
         valueMissing: 'O campo de data de nascimento não pode estar vazio.',
         customError: 'Você deve ser maior do que 18 anos para se cadastrar.'
     },
     cpf: {
         valueMissing: 'O campo de CPF não pode estar vazio',
         customError: 'O CPF digitado não é válido.'
+    },
+    cep: {
+        valueMissing: 'Você deve digitar o cep',
+        patternMismatch: 'O CEP digitado não é válido.'
+    },
+    logradouro: {
+        valueMissing: 'O campo de logradouro não pode estar vazio'
+    },
+    cidade: {
+        valueMissing: 'O campo de cidade não pode estar vazio'
+    },
+    estado: {
+        valueMissing: 'O campo de estado não pode estar vazio'
     }
 }
 
 const validadores = {
     dataNascimento: input => validaDataNascimento(input),
-    cpf: input => validaCPF(input)
+    cpf: input => validaCPF(input),
+    cep: input => recuperarCEP(input),
 };
 function mostraMensagemDeErro(tipoDeInput, input) {
     let mensagem = ''
@@ -140,4 +159,26 @@ function checaDigitoVerificador(cpf, multiplicador) {
 
 function confirmaDigito(soma) {
     return 11 - (soma % 11)
+}
+
+function recuperarCEP(input) {
+    const cep = input.value.replace(/\D/g, '')
+    const url = `https://viacep.com.br/ws/${cep}/json/`
+    const options = {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+            'content-type': 'application/json;charset=utf-8'
+        }
+    }
+    if (!input.validity.patternMismatch && !input.validity.valueMissing) {
+        fetch(url, options).then(
+            response => response.json()
+        ).then(
+            data => {
+                console.log(data)
+            }
+        )
+
+    }
 }
