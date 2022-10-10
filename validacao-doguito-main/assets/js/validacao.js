@@ -1,6 +1,6 @@
 export function valida(input) {
     const tipoDeInput = input.tipo
-    console.log(input.dataset.tipo)
+
 
     if (validadores[tipoDeInput]) {
         validadores[tipoDeInput](input)
@@ -47,7 +47,8 @@ const mensagensDeErro = {
     },
     cep: {
         valueMissing: 'Você deve digitar o cep',
-        patternMismatch: 'O CEP digitado não é válido.'
+        patternMismatch: 'O CEP digitado não é válido.',
+        customError: 'CEP não encontrado.'
     },
     logradouro: {
         valueMissing: 'O campo de logradouro não pode estar vazio'
@@ -57,6 +58,9 @@ const mensagensDeErro = {
     },
     estado: {
         valueMissing: 'O campo de estado não pode estar vazio'
+    },
+    preco: {
+        valueMissing: 'O campo de preço não pode estar vazio.'
     }
 }
 
@@ -71,10 +75,11 @@ function mostraMensagemDeErro(tipoDeInput, input) {
     tiposDeErro.forEach(erro => {
         if (input.validity[erro]) {
             mensagem = mensagensDeErro[tipoDeInput][erro]
-            console.log(tipoDeInput)
+            console.log(erro)
         }
     })
     return mensagem
+
 }
 
 function validaDataNascimento(input) {
@@ -148,7 +153,7 @@ function checaDigitoVerificador(cpf, multiplicador) {
     let soma = 0;
 
     const cpfSemDigitos = cpf.substr(0, multiplicador - 1).split('');
-    const digitoVerificador = cpf.charAt(multiplicador -1);
+    const digitoVerificador = cpf.charAt(multiplicador - 1);
 
     for (let contador = 0; multiplicadorInicial > 1; multiplicadorInicial--) {
         soma = soma + cpfSemDigitos[contador] * multiplicadorInicial
@@ -180,9 +185,28 @@ function recuperarCEP(input) {
             response => response.json()
         ).then(
             data => {
-               console.log(data)
+                if (data.erro) {
+                    input.setCustomValidity('CEP não encontrado')
+                    return
+
+                }
+
+                input.setCustomValidity('')
+                preencheCamposComCEP(data)
+                return
             }
         )
 
     }
 }
+function preencheCamposComCEP(data) {
+    const logradouro = document.querySelector('[data-tipo="logradouro]')
+    const cidade = document.querySelector('[data-tipo="cidade]')
+    const estado = document.querySelector('[data-tipo="estado]')
+
+    logradouro.value = data.logradouro
+    cidade.value = data.localidade
+    estado.value = data.uf
+
+}
+
